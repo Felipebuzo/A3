@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cadastro Geral</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f4f6f9;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #5a60ea;
+      margin-bottom: 30px;
+    }
+    fieldset {
+      border: none;
+      background: #fff;
+      padding: 20px;
+      margin-bottom: 30px;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+    }
+    legend {
+      font-size: 20px;
+      font-weight: bold;
+      color: #5a60ea;
+      margin-bottom: 10px;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: 500;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 4px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 15px;
+      cursor: pointer;
+      background-color: #5a60ea;
+      color: white;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background-color: #3f45c4;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Cadastro Geral</h1>
+
+    <fieldset>
+      <legend>👨‍🎓 Cadastro de Aluno</legend>
+      <label>Nome:</label><input type="text" id="nomeAluno" />
+      <label>CPF:</label><input type="text" id="cpfAluno" />
+      <label>Email:</label><input type="email" id="emailAluno" />
+      <label>Faculdade:</label><input type="text" id="faculdadeAluno" />
+      <label>Matéria:</label><input type="text" id="materiaAluno" />
+      <label>Nota:</label><input type="number" id="notaAluno" min="0" max="10" />
+      <button onclick="cadastrarAluno()">Cadastrar Aluno</button>
+    </fieldset>
+
+    <fieldset>
+      <legend>👩‍🏫 Cadastro de Professor</legend>
+      <label>Nome:</label><input type="text" id="nomeProfessor" />
+      <label>CPF:</label><input type="text" id="cpfProfessor" />
+      <label>Email:</label><input type="email" id="emailProfessor" />
+      <label>Departamento:</label><input type="text" id="departamentoProfessor" />
+      <button onclick="cadastrarProfessor()">Cadastrar Professor</button>
+    </fieldset>
+
+    <fieldset>
+      <legend>📚 Cadastro de Curso</legend>
+      <label>Nome do Curso:</label><input type="text" id="nomeCurso" />
+      <label>Professor Responsável:</label><input type="text" id="professorCurso" />
+      <button onclick="cadastrarCurso()">Cadastrar Curso</button>
+    </fieldset>
+
+    <button onclick="irParaRelatorio()">📊 Ir para Relatório</button>
+  </div>
+
+  <script>
+    class Pessoa {
+      #cpf;
+      constructor(nome, cpf, email) {
+        this.nome = nome;
+        this.#cpf = cpf;
+        this.email = email;
+      }
+      getCpf() { return this.#cpf; }
+      setCpf(cpf) { this.#cpf = cpf; }
+      apresentar() { return `Olá, sou ${this.nome}`; }
+    }
+
+    class Aluno extends Pessoa {
+      constructor(nome, cpf, email, faculdade, materia, nota) {
+        super(nome, cpf, email);
+        this.faculdade = faculdade;
+        this.materia = materia;
+        this.nota = Number(nota);
+      }
+      apresentar() {
+        return `Sou o aluno ${this.nome}, cursando ${this.materia} na ${this.faculdade}`;
+      }
+    }
+
+    class Professor extends Pessoa {
+      constructor(nome, cpf, email, departamento) {
+        super(nome, cpf, email);
+        this.departamento = departamento;
+      }
+      apresentar() {
+        return `Sou o professor ${this.nome}, do departamento de ${this.departamento}`;
+      }
+    }
+
+    class Curso {
+      #alunos;
+      constructor(nome, professorResponsavel) {
+        this.nome = nome;
+        this.professorResponsavel = professorResponsavel;
+        this.#alunos = [];
+      }
+      adicionarAluno(aluno) {
+        this.#alunos.push(aluno);
+      }
+      getAlunos() {
+        return this.#alunos;
+      }
+      getQuantidadeAlunos() {
+        return this.#alunos.length;
+      }
+    }
+
+    const alunos = JSON.parse(localStorage.getItem("alunos")) || [];
+    const professores = JSON.parse(localStorage.getItem("professores")) || [];
+    const cursos = JSON.parse(localStorage.getItem("cursos")) || [];
+
+    function cadastrarAluno() {
+      const aluno = new Aluno(
+        document.getElementById("nomeAluno").value,
+        document.getElementById("cpfAluno").value,
+        document.getElementById("emailAluno").value,
+        document.getElementById("faculdadeAluno").value,
+        document.getElementById("materiaAluno").value,
+        document.getElementById("notaAluno").value
+      );
+      alunos.push({
+        nome: aluno.nome,
+        cpf: aluno.getCpf(),
+        email: aluno.email,
+        faculdade: aluno.faculdade,
+        materia: aluno.materia,
+        nota: aluno.nota
+      });
+      localStorage.setItem("alunos", JSON.stringify(alunos));
+      alert("Aluno cadastrado com sucesso!");
+    }
+
+    function cadastrarProfessor() {
+      const professor = new Professor(
+        document.getElementById("nomeProfessor").value,
+        document.getElementById("cpfProfessor").value,
+        document.getElementById("emailProfessor").value,
+        document.getElementById("departamentoProfessor").value
+      );
+      professores.push({
+        nome: professor.nome,
+        cpf: professor.getCpf(),
+        email: professor.email,
+        departamento: professor.departamento
+      });
+      localStorage.setItem("professores", JSON.stringify(professores));
+      alert("Professor cadastrado com sucesso!");
+    }
+
+    function cadastrarCurso() {
+      const curso = new Curso(
+        document.getElementById("nomeCurso").value,
+        document.getElementById("professorCurso").value
+      );
+      const alunoNome = document.getElementById("nomeAluno").value;
+      if (alunoNome) curso.adicionarAluno({ nome: alunoNome });
+      cursos.push({
+        nome: curso.nome,
+        professorResponsavel: curso.professorResponsavel,
+        alunos: curso.getAlunos().map(a => a.nome)
+      });
+      localStorage.setItem("cursos", JSON.stringify(cursos));
+      alert("Curso cadastrado com sucesso!");
+    }
+
+    function irParaRelatorio() {
+      window.location.href = "cadastrados.html";
+    }
+  </script>
+</body>
+</html>
